@@ -1,0 +1,648 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lumina Admin — Panel de Administración</title>
+  <link rel="alternate" hreflang="es-US" href="https://tudominio.com/es/" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --dark-900: #0B0314;
+      --dark-800: #140822;
+      --dark-700: #1e0f33;
+      --gold-400: #D4AF37;
+      --gold-500: #B8860B;
+      --neon-purple: #8A2BE2;
+      --green-500: #22c55e;
+      --red-500: #ef4444;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--dark-900);
+      color: #f5f5f5;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ===== LOGIN PAGE ===== */
+    .login-wrapper {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      background: linear-gradient(135deg, var(--dark-900) 0%, #0d0520 50%, var(--dark-900) 100%);
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--dark-800);
+      border: 1px solid rgba(138,43,226,0.15);
+      border-radius: 1.5rem;
+      padding: 3rem 2.5rem;
+      box-shadow: 0 0 60px rgba(138,43,226,0.08);
+      backdrop-filter: blur(20px);
+    }
+
+    .login-card .logo {
+      font-family: 'Cinzel', serif;
+      color: var(--gold-400);
+      font-size: 1.8rem;
+      font-weight: 700;
+      text-align: center;
+      letter-spacing: 0.2em;
+      margin-bottom: 0.5rem;
+    }
+
+    .login-card .subtitle {
+      text-align: center;
+      color: #9ca3af;
+      font-size: 0.85rem;
+      margin-bottom: 2rem;
+      font-weight: 300;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      color: #9ca3af;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .form-group input, .form-group textarea {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      background: var(--dark-900);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 0.75rem;
+      color: #f5f5f5;
+      font-size: 0.95rem;
+      font-family: 'Inter', sans-serif;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      outline: none;
+    }
+
+    .form-group input:focus, .form-group textarea:focus {
+      border-color: var(--gold-400);
+      box-shadow: 0 0 0 3px rgba(212,175,55,0.1);
+    }
+
+    .form-group input::placeholder {
+      color: #4b5563;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 0.85rem;
+      background: var(--gold-400);
+      color: var(--dark-900);
+      border: none;
+      border-radius: 0.75rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      letter-spacing: 0.05em;
+    }
+
+    .btn-primary:hover {
+      background: var(--gold-500);
+      box-shadow: 0 0 25px rgba(212,175,55,0.3);
+    }
+
+    .btn-secondary {
+      padding: 0.65rem 1.5rem;
+      background: transparent;
+      color: var(--gold-400);
+      border: 1px solid rgba(212,175,55,0.3);
+      border-radius: 0.75rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-secondary:hover {
+      background: var(--gold-400);
+      color: var(--dark-900);
+    }
+
+    .btn-danger {
+      padding: 0.65rem 1.5rem;
+      background: transparent;
+      color: var(--red-500);
+      border: 1px solid rgba(239,68,68,0.3);
+      border-radius: 0.75rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-danger:hover {
+      background: var(--red-500);
+      color: white;
+    }
+
+    .error-msg {
+      color: var(--red-500);
+      font-size: 0.8rem;
+      text-align: center;
+      margin-top: 1rem;
+      display: none;
+    }
+
+    /* ===== DASHBOARD ===== */
+    .dashboard-wrapper {
+      min-height: 100vh;
+      display: none;
+    }
+
+    .dashboard-header {
+      background: var(--dark-800);
+      border-bottom: 1px solid rgba(212,175,55,0.15);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(20px);
+    }
+
+    .dashboard-header .logo {
+      font-family: 'Cinzel', serif;
+      color: var(--gold-400);
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+    }
+
+    .dashboard-header .badge {
+      background: rgba(138,43,226,0.15);
+      color: var(--neon-purple);
+      font-size: 0.7rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      margin-left: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+    }
+
+    .dashboard-header .user-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .dashboard-header .user-info span {
+      color: #9ca3af;
+      font-size: 0.85rem;
+    }
+
+    .dashboard-content {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem;
+    }
+
+    .section-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.4rem;
+      color: var(--gold-400);
+      margin-bottom: 0.5rem;
+    }
+
+    .section-desc {
+      color: #6b7280;
+      font-size: 0.85rem;
+      margin-bottom: 1.5rem;
+      font-weight: 300;
+    }
+
+    .settings-card {
+      background: var(--dark-800);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 1rem;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      transition: border-color 0.3s;
+    }
+
+    .settings-card:hover {
+      border-color: rgba(212,175,55,0.15);
+    }
+
+    .settings-card h3 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.1rem;
+      color: #f5f5f5;
+      margin-bottom: 0.35rem;
+    }
+
+    .settings-card .card-desc {
+      color: #6b7280;
+      font-size: 0.8rem;
+      margin-bottom: 1.5rem;
+      font-weight: 300;
+    }
+
+    .settings-card .icon-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .settings-card .icon-circle {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .icon-wa { background: rgba(34,197,94,0.15); }
+    .icon-tag { background: rgba(138,43,226,0.15); }
+
+    .form-group textarea {
+      min-height: 140px;
+      resize: vertical;
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+      line-height: 1.6;
+    }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      border-radius: 0.75rem;
+      font-size: 0.8rem;
+      margin-bottom: 1.5rem;
+      display: none;
+    }
+
+    .status-bar.success {
+      display: flex;
+      background: rgba(34,197,94,0.1);
+      border: 1px solid rgba(34,197,94,0.2);
+      color: var(--green-500);
+    }
+
+    .status-bar.error {
+      display: flex;
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.2);
+      color: var(--red-500);
+    }
+
+    .preview-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--neon-purple);
+      font-size: 0.8rem;
+      text-decoration: none;
+      margin-top: 0.75rem;
+      transition: color 0.3s;
+    }
+
+    .preview-link:hover { color: var(--gold-400); }
+
+    .btn-row {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .current-value {
+      background: var(--dark-900);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 0.5rem;
+      padding: 0.6rem 1rem;
+      font-size: 0.85rem;
+      color: var(--gold-400);
+      font-family: 'Courier New', monospace;
+      margin-bottom: 1rem;
+      word-break: break-all;
+    }
+
+    .current-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #6b7280;
+      margin-bottom: 0.35rem;
+    }
+
+    @media (max-width: 640px) {
+      .login-card { padding: 2rem 1.5rem; }
+      .dashboard-content { padding: 1.5rem 1rem; }
+      .settings-card { padding: 1.5rem; }
+      .dashboard-header { padding: 1rem; }
+      .btn-row { flex-direction: column; }
+      .btn-row button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== LOGIN SCREEN ===== -->
+  <div id="login-screen" class="login-wrapper">
+    <div class="login-card">
+      <div class="logo">LUMINA</div>
+      <p class="subtitle">Panel de Administración</p>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label>Usuario</label>
+          <input type="text" id="login-user" placeholder="admin" autocomplete="username" required />
+        </div>
+        <div class="form-group">
+          <label>Contraseña</label>
+          <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" required />
+        </div>
+        <button type="submit" class="btn-primary">Iniciar Sesión</button>
+        <p id="login-error" class="error-msg">Usuario o contraseña incorrectos.</p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== DASHBOARD ===== -->
+  <div id="dashboard-screen" class="dashboard-wrapper">
+    <!-- Header -->
+    <header class="dashboard-header">
+      <div style="display:flex;align-items:center;">
+        <span class="logo">LUMINA</span>
+        <span class="badge">ADMIN</span>
+      </div>
+      <div class="user-info">
+        <span id="dash-user-display">admin</span>
+        <button id="logout-btn" class="btn-danger">Cerrar Sesión</button>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <div class="dashboard-content">
+      <h2 class="section-title">Configuración del Sitio</h2>
+      <p class="section-desc">Administra los ajustes principales de tu Landing Page de forma rápida y segura.</p>
+
+      <!-- Status bar -->
+      <div id="status-bar" class="status-bar"></div>
+
+      <!-- WhatsApp Config -->
+      <div class="settings-card">
+        <div class="icon-header">
+          <div class="icon-circle icon-wa">📱</div>
+          <div>
+            <h3>Número de WhatsApp</h3>
+          </div>
+        </div>
+        <p class="card-desc">Configura el número de teléfono al que se redirigirán todos los botones de WhatsApp en la landing page. Usa formato internacional sin espacios (ej: 15551234567).</p>
+
+        <p class="current-label">Valor actual:</p>
+        <div class="current-value" id="wa-current">Sin configurar</div>
+
+        <div class="form-group">
+          <label>Nuevo número de WhatsApp</label>
+          <input type="tel" id="wa-number-input" placeholder="15551234567" />
+        </div>
+
+        <div class="form-group">
+          <label>Mensaje predeterminado (Español)</label>
+          <input type="text" id="wa-msg-es" placeholder="Hola, busco ayuda espiritual." />
+        </div>
+
+        <div class="form-group">
+          <label>Mensaje predeterminado (Inglés)</label>
+          <input type="text" id="wa-msg-en" placeholder="Hello, I'm looking for spiritual help." />
+        </div>
+
+        <a href="#" id="wa-preview-link" class="preview-link" target="_blank">🔗 Ver link de prueba →</a>
+      </div>
+
+      <!-- GTM / Tag Manager Config -->
+      <div class="settings-card">
+        <div class="icon-header">
+          <div class="icon-circle icon-tag">📊</div>
+          <div>
+            <h3>Google Tag Manager</h3>
+          </div>
+        </div>
+        <p class="card-desc">Pega tu código de Google Tag Manager (GTM) o Google Ads (gtag.js). Este código se inyectará automáticamente en el <code>&lt;head&gt;</code> de la landing page para el seguimiento de conversiones.</p>
+
+        <p class="current-label">Estado actual:</p>
+        <div class="current-value" id="gtm-current">Sin configurar</div>
+
+        <div class="form-group">
+          <label>ID de Google Tag Manager (GTM-XXXXXXX)</label>
+          <input type="text" id="gtm-id-input" placeholder="GTM-XXXXXXX" />
+        </div>
+
+        <div class="form-group">
+          <label>ID de Google Ads Conversion (AW-XXXXXXX/YYYY)</label>
+          <input type="text" id="gads-id-input" placeholder="AW-123456789/AbCdEfGhIjKlMn" />
+        </div>
+
+        <div class="form-group">
+          <label>Código personalizado adicional (opcional — script completo)</label>
+          <textarea id="custom-script-input" placeholder="<!-- Pega aquí cualquier script adicional de tracking -->"></textarea>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="btn-row">
+        <button id="save-settings-btn" class="btn-primary" style="width:auto;padding:0.85rem 2.5rem;">💾 Guardar Cambios</button>
+        <button id="reset-settings-btn" class="btn-danger">🗑️ Restaurar Valores</button>
+        <a href="/" class="btn-secondary" style="text-decoration:none;display:inline-flex;align-items:center;">🌐 Ver Landing Page</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ===== CONFIG ===== */
+    // Default credentials (cambiar en producción)
+    const ADMIN_USER = 'admin'
+    const ADMIN_PASS = 'lumina2026'
+    const STORAGE_KEY = 'lumina_admin_settings'
+    const AUTH_KEY = 'lumina_admin_auth'
+
+    /* ===== HELPERS ===== */
+    function getSettings() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}
+      } catch { return {} }
+    }
+
+    function saveSettings(data) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+    }
+
+    function showStatus(msg, type = 'success') {
+      const bar = document.getElementById('status-bar')
+      bar.textContent = type === 'success' ? '✅ ' + msg : '❌ ' + msg
+      bar.className = 'status-bar ' + type
+      bar.style.display = 'flex'
+      setTimeout(() => { bar.style.display = 'none' }, 4000)
+    }
+
+    /* ===== AUTH ===== */
+    function isLoggedIn() {
+      return sessionStorage.getItem(AUTH_KEY) === 'true'
+    }
+
+    function login(user, pass) {
+      if (user === ADMIN_USER && pass === ADMIN_PASS) {
+        sessionStorage.setItem(AUTH_KEY, 'true')
+        return true
+      }
+      return false
+    }
+
+    function logout() {
+      sessionStorage.removeItem(AUTH_KEY)
+      showScreen('login')
+    }
+
+    /* ===== SCREENS ===== */
+    function showScreen(screen) {
+      document.getElementById('login-screen').style.display = screen === 'login' ? 'flex' : 'none'
+      document.getElementById('dashboard-screen').style.display = screen === 'dashboard' ? 'block' : 'none'
+    }
+
+    /* ===== LOAD CURRENT VALUES ===== */
+    function loadCurrentValues() {
+      const s = getSettings()
+      const waCurrent = document.getElementById('wa-current')
+      const gtmCurrent = document.getElementById('gtm-current')
+
+      // WhatsApp
+      if (s.waNumber) {
+        waCurrent.textContent = '+' + s.waNumber
+        waCurrent.style.color = '#22c55e'
+        document.getElementById('wa-number-input').value = s.waNumber
+      } else {
+        waCurrent.textContent = 'Sin configurar'
+        waCurrent.style.color = '#ef4444'
+      }
+
+      if (s.waMsgEs) document.getElementById('wa-msg-es').value = s.waMsgEs
+      if (s.waMsgEn) document.getElementById('wa-msg-en').value = s.waMsgEn
+
+      // GTM
+      const gtmParts = []
+      if (s.gtmId) { gtmParts.push('GTM: ' + s.gtmId); document.getElementById('gtm-id-input').value = s.gtmId }
+      if (s.gadsId) { gtmParts.push('GAds: ' + s.gadsId); document.getElementById('gads-id-input').value = s.gadsId }
+      if (s.customScript) document.getElementById('custom-script-input').value = s.customScript
+
+      if (gtmParts.length > 0) {
+        gtmCurrent.textContent = gtmParts.join(' | ')
+        gtmCurrent.style.color = '#22c55e'
+      } else {
+        gtmCurrent.textContent = 'Sin configurar'
+        gtmCurrent.style.color = '#ef4444'
+      }
+
+      // Update preview link
+      updatePreviewLink()
+    }
+
+    function updatePreviewLink() {
+      const num = document.getElementById('wa-number-input').value.trim()
+      const msg = document.getElementById('wa-msg-es').value.trim() || 'Hola, busco ayuda espiritual.'
+      const link = document.getElementById('wa-preview-link')
+      if (num) {
+        link.href = 'https://wa.me/' + num + '?text=' + encodeURIComponent(msg)
+        link.textContent = '🔗 Ver link de prueba: wa.me/' + num + ' →'
+      } else {
+        link.href = '#'
+        link.textContent = '🔗 Ingresa un número para ver la vista previa →'
+      }
+    }
+
+    /* ===== EVENT LISTENERS ===== */
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check session
+      if (isLoggedIn()) {
+        showScreen('dashboard')
+        loadCurrentValues()
+      } else {
+        showScreen('login')
+      }
+
+      // Login form
+      document.getElementById('login-form').addEventListener('submit', (e) => {
+        e.preventDefault()
+        const user = document.getElementById('login-user').value.trim()
+        const pass = document.getElementById('login-pass').value
+        if (login(user, pass)) {
+          showScreen('dashboard')
+          loadCurrentValues()
+        } else {
+          document.getElementById('login-error').style.display = 'block'
+          setTimeout(() => { document.getElementById('login-error').style.display = 'none' }, 3000)
+        }
+      })
+
+      // Logout
+      document.getElementById('logout-btn').addEventListener('click', logout)
+
+      // Save
+      document.getElementById('save-settings-btn').addEventListener('click', () => {
+        const data = {
+          waNumber: document.getElementById('wa-number-input').value.trim(),
+          waMsgEs: document.getElementById('wa-msg-es').value.trim(),
+          waMsgEn: document.getElementById('wa-msg-en').value.trim(),
+          gtmId: document.getElementById('gtm-id-input').value.trim(),
+          gadsId: document.getElementById('gads-id-input').value.trim(),
+          customScript: document.getElementById('custom-script-input').value.trim(),
+          updatedAt: new Date().toISOString()
+        }
+
+        saveSettings(data)
+        loadCurrentValues()
+        showStatus('Configuración guardada exitosamente. Los cambios ya están activos en la landing page.')
+      })
+
+      // Reset
+      document.getElementById('reset-settings-btn').addEventListener('click', () => {
+        if (confirm('¿Estás seguro? Esto eliminará toda la configuración guardada.')) {
+          localStorage.removeItem(STORAGE_KEY)
+          document.getElementById('wa-number-input').value = ''
+          document.getElementById('wa-msg-es').value = ''
+          document.getElementById('wa-msg-en').value = ''
+          document.getElementById('gtm-id-input').value = ''
+          document.getElementById('gads-id-input').value = ''
+          document.getElementById('custom-script-input').value = ''
+          loadCurrentValues()
+          showStatus('Configuración restaurada a valores predeterminados.', 'error')
+        }
+      })
+
+      // Live preview of WA link
+      document.getElementById('wa-number-input').addEventListener('input', updatePreviewLink)
+      document.getElementById('wa-msg-es').addEventListener('input', updatePreviewLink)
+    })
+  </script>
+</body>
+</html>
