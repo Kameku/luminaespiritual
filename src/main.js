@@ -408,16 +408,15 @@ function initTestimonialSlider() {
 /* ===== TRACKING ===== */
 function trackWhatsAppConversion() {
   const settings = getAdminSettings()
-  const gadsId = settings.gadsId || 'AW-123456789/AbCdEfGhIjKlMnOpQr'
 
-  if (typeof gtag === 'function') {
-    gtag('event', 'conversion', {
-      'send_to': gadsId,
-      'language': currentLang,
-      'event_category': 'Leads',
-      'event_label': 'WhatsApp Click'
-    })
-  }
+  // Push evento al dataLayer para GTM
+  window.dataLayer = window.dataLayer || []
+  window.dataLayer.push({
+    'event': 'whatsapp_click',
+    'event_category': 'Leads',
+    'event_label': 'WhatsApp Click',
+    'language': currentLang
+  })
 
   // Dynamic WhatsApp number & message from dashboard
   const waNumber = settings.waNumber || '14693367612'
@@ -426,31 +425,6 @@ function trackWhatsAppConversion() {
   const msg = currentLang === 'es' ? defaultMsgEs : defaultMsgEn
 
   window.open('https://wa.me/' + waNumber + '?text=' + encodeURIComponent(msg), '_blank')
-}
-
-/* ===== DYNAMIC GTM INJECTION ===== */
-function injectGTM() {
-  const settings = getAdminSettings()
-
-  // Inject GTM container if configured
-  if (settings.gtmId) {
-    const gtmScript = document.createElement('script')
-    gtmScript.innerHTML = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${settings.gtmId}');`
-    document.head.appendChild(gtmScript)
-  }
-
-  // Inject custom script if configured
-  if (settings.customScript) {
-    const customEl = document.createElement('div')
-    customEl.innerHTML = settings.customScript
-    const scripts = customEl.querySelectorAll('script')
-    scripts.forEach(s => {
-      const newScript = document.createElement('script')
-      if (s.src) { newScript.src = s.src; newScript.async = true }
-      else { newScript.innerHTML = s.innerHTML }
-      document.head.appendChild(newScript)
-    })
-  }
 }
 
 /* ===== HERO SLIDER ===== */
@@ -564,7 +538,6 @@ document.addEventListener('DOMContentLoaded', () => {
   })
 
   // Init modules
-  injectGTM()
   initHeroSlider()
   initMobileNav()
   initSmoothScroll()
